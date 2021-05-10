@@ -1,0 +1,26 @@
+{
+    "name": "anggadarkprince/healthcheck-notifier",
+    "description": "Monitor health check from healthchecks api",
+    "type": "project",
+    "autoload": {
+        "files": [
+            "src/Support/helpers.php"
+        ],
+        "psr-4": {
+            "HealthCheckNotifier\\": "src"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Angga Ari Wijaya",
+            "email": "anggadarkprince@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^7.3",
+        "vlucas/phpdotenv": "^5.3",
+        "swiftmailer/swiftmailer": "^6.2",
+        "ext-json": "*"
+    }
+}
