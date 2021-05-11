@@ -41,8 +41,23 @@ class HealthNotification extends NotificationResponse
                         $messages .= "   Message: {$service['health_check']['message']}\n";
                         $messages .= "   Members: \n";
                         foreach ($service['health_check']['data']['members'] as $member) {
-                            $messages .= "   - {$member['MEMBER_HOST']} ({$member['MEMBER_STATE']}) \n";
+                            $messages .= "   - {$member['MEMBER_HOST']} ({$member['MEMBER_STATE']}) " . ($member['MEMBER_STATE'] != 'ONLINE' ? "‼" : '') . "\n";
                         }
+                        $messages .= "\n";
+                        break;
+                    case 'Object Storage':
+                        $messages .= "*- Object Storage*\n";
+                        $messages .= "   Status: {$service['health_check']['status']}\n";
+                        $messages .= "   Message: {$service['health_check']['message']}\n";
+                        $messages .= "   Capacity: " . ($service['health_check']['data']['reserved_space'] ?? 0) . ' ' . ($service['health_check']['data']['reserved_space_unit'] ?? '') . "\n";
+                        $messages .= "   Total Usage: " . number_format($service['health_check']['data']['total_usage'] ?? 0, 1, ',', '.') . ' ' . ($service['health_check']['data']['total_usage_unit'] ?? '') . "\n";
+                        $messages .= "   Total Left: " . number_format($service['health_check']['data']['total_left'] ?? 0, 1, ',', '.') . ' ' . ($service['health_check']['data']['total_left_unit'] ?? '') . "\n";
+                        $messages .= "   Usage Percent: " . number_format($service['health_check']['data']['usage_percent'] ?? 0, 1, ',', '.') . "%" . ($service['health_check']['data']['usage_percent'] >= $_ENV['OBJECT_STORAGE_PERCENT_LIMIT'] ? "‼" : '') . "\n";
+                        $messages .= "   Buckets: \n";
+                        foreach ($service['health_check']['data']['buckets'] as $bucket) {
+                            $messages .= "   - {$bucket['bucket_name']} (" . number_format($bucket['total'], 1, ',', '.') . " {$bucket['total_unit']}) \n";
+                        }
+
                         $messages .= "\n";
                         break;
                 }
