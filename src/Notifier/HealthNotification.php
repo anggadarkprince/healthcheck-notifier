@@ -20,6 +20,7 @@ class HealthNotification extends NotificationResponse
             //$messages .= json_encode($data['services'], JSON_PRETTY_PRINT);
 
             foreach ($data['services'] as $service) {
+                $healthCheck = $service['health_check'] ?? [];
                 switch ($service['service_name']) {
                     case 'Web':
                         $messages .= "*- Web*\n";
@@ -56,6 +57,25 @@ class HealthNotification extends NotificationResponse
                         $messages .= "   Buckets: \n";
                         foreach ($service['health_check']['data']['buckets'] as $bucket) {
                             $messages .= "   - {$bucket['bucket_name']} (" . number_format($bucket['total'], 1, ',', '.') . " {$bucket['total_unit']}) \n";
+                        }
+
+                        $messages .= "\n";
+                        break;
+                    case 'Server':
+                        $system =
+                        $messages .= "*- Server*\n";
+                        $messages .= "   Status: {$healthCheck['status']}\n";
+                        $messages .= "   Message: {$healthCheck['message']}\n";
+                        $messages .= "   OS: " . ($healthCheck['data']['system']['operating_system'] ?? 'Unavailable') . "\n";
+                        $messages .= "   Host: " . ($healthCheck['data']['system']['static_hostname'] ?? 'Unavailable') . "\n";
+                        $messages .= "   Virtualization: " . ($healthCheck['data']['system']['virtualization'] ?? 'Unavailable') . "\n";
+                        $messages .= "   Memory: " . ($healthCheck['data']['memory']['total'] ?? 'Unavailable') . "\n";
+                        $messages .= "   Disk: " . ($healthCheck['data']['disk']['total'] ?? 'Unavailable') . "\n";
+                        $messages .= "     Disk Free: " . ($healthCheck['data']['disk']['free'] ?? 'Unavailable') . "\n";
+                        $messages .= "     Disk Percent: " . number_format($healthCheck['data']['disk']['usage_percent'] ?? 0, 1, ',', '.') . "%" . ($healthCheck['data']['disk']['usage_percent'] >= $_ENV['SERVER_STORAGE_PERCENT_LIMIT'] ? "‼" : '') . "\n";
+                        $messages .= "     Directory Report: \n";
+                        foreach ($healthCheck['data']['disk']['directory_report']['contents'] as $dir => $size) {
+                            $messages .= "     - {$dir} ({$size}) \n";
                         }
 
                         $messages .= "\n";
