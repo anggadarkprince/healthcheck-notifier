@@ -26,6 +26,7 @@ class ObjectStorageNotification extends NotificationResponse
                     'body' => $messages
                 ]
             ]);
+            log_message('Service [Object Storage] Unavailable', $data);
         } else if ($data['data']['usage_percent'] >= ($_ENV['OBJECT_STORAGE_PERCENT_LIMIT'] ?? 95)) {
             $messages = "❌ *INSUFFICIENT S3 STORAGE* ❌\n";
             $messages .= "————————————————————\n";
@@ -47,6 +48,7 @@ class ObjectStorageNotification extends NotificationResponse
                     'body' => $messages
                 ]
             ]);
+            log_message('Service [Object Storage] Insufficient Storage', $data);
         }
     }
 }

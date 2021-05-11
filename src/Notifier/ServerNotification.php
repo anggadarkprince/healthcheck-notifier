@@ -27,6 +27,7 @@ class ServerNotification extends NotificationResponse
                     'body' => $messages
                 ]
             ]);
+            log_message('Service [Server] Unavailable', $data);
         } else if ($data['data']['disk']['usage_percent'] >= ($_ENV['SERVER_STORAGE_PERCENT_LIMIT'] ?? 95)) {
             $messages = "❌ *INSUFFICIENT STORAGE* ❌\n";
             $messages .= "———————————————————\n";
@@ -45,6 +46,7 @@ class ServerNotification extends NotificationResponse
                     'body' => $messages
                 ]
             ]);
+            log_message('Service [Server] Insufficient Storage', $data);
         }
     }
 }

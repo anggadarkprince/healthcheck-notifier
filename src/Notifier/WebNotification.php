@@ -26,6 +26,7 @@ class WebNotification extends NotificationResponse
                     'body' => $messages
                 ]
             ]);
+            log_message('Service [Web] Unavailable', $data);
         }
     }
 }

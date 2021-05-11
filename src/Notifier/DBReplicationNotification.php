@@ -36,6 +36,7 @@ class DBReplicationNotification extends NotificationResponse
                         'body' => $messages
                     ]
                 ]);
+                log_message('Service [Database Replication] Unavailable', $data);
             }
         }
     }

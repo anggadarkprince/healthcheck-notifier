@@ -25,6 +25,7 @@ class DBNotification extends NotificationResponse
                     'body' => $messages
                 ]
             ]);
+            log_message('Service [Database] Unavailable', $data);
         }
     }
 }

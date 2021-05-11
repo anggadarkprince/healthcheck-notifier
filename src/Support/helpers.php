@@ -1,5 +1,8 @@
 <?php
 
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+
 if (!function_exists('detect_chat_id')) {
 
     function detect_chat_id($chatId)
@@ -15,5 +18,16 @@ if (!function_exists('detect_chat_id')) {
         }
 
         return $chatId;
+    }
+}
+
+if (!function_exists('log_message')) {
+
+    function log_message($message, $data = [], $level = Logger::ALERT)
+    {
+        $log = new Logger('app-logger');
+        $log->pushHandler(new StreamHandler(__DIR__ . '/../../logs/logs.log', $level));
+
+        $log->alert($message, $data);
     }
 }
