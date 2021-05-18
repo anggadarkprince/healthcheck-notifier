@@ -31,3 +31,56 @@ if (!function_exists('log_message')) {
         $log->alert($message, $data);
     }
 }
+
+if (!function_exists('get_notification_log')) {
+
+    function get_notification_log($key = null, $logFile = __DIR__ . '/../../logs/notification.ini')
+    {
+        if (file_exists($logFile)) {
+            $result = parse_ini_file($logFile, true);
+            if (empty($key)) {
+                return $result;
+            }
+            return $result[$key] ?? '';
+        } else {
+            fopen($logFile, "w");
+            return [];
+        }
+    }
+}
+
+if (!function_exists('set_notification_log')) {
+
+    function set_notification_log($array, $logFile = __DIR__ . '/../../logs/notification.ini')
+    {
+        get_notification_log(null, $logFile);
+
+        $res = array();
+        foreach ($array as $key => $val) {
+            if (is_array($val)) {
+                $res[] = "[$key]";
+                foreach ($val as $subKey => $subVal) {
+                    $res[] = "$subKey = " . (is_numeric($subVal) ? $subVal : '"' . $subVal . '"');
+                }
+            } else {
+                $res[] = "$key = " . (is_numeric($val) ? $val : '"' . $val . '"');
+            }
+        }
+
+        if ($fp = fopen($logFile, 'w')) {
+            $startTime = microtime(TRUE);
+            do {
+                $canWrite = flock($fp, LOCK_EX);
+                // If lock not obtained sleep for 0 - 100 milliseconds, to avoid collision and CPU load
+                if (!$canWrite) usleep(round(rand(0, 100) * 1000));
+            } while ((!$canWrite) and ((microtime(TRUE) - $startTime) < 5));
+
+            // file was locked so now we can store information
+            if ($canWrite) {
+                fwrite($fp, implode("\r\n", $res));
+                flock($fp, LOCK_UN);
+            }
+            fclose($fp);
+        }
+    }
+}
