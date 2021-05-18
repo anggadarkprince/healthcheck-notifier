@@ -21,6 +21,45 @@ if (!function_exists('detect_chat_id')) {
     }
 }
 
+if (!function_exists('format_date')) {
+
+    function format_date($value, $format = 'Y-m-d')
+    {
+        if (empty($value)) {
+            return $value;
+        }
+        try {
+            return (new DateTime($value))->format($format);
+        } catch (Exception $e) {
+            return '';
+        }
+    }
+}
+
+if (!function_exists('get_exp_minute')) {
+
+    function get_exp_minute($value)
+    {
+        if ($value == 0) {
+            return 0;
+        } else if ($value == 1) {
+            return 10;
+        } else if ($value == 2) {
+            return 30;
+        } else if ($value == 3) {
+            return 60 * 2;
+        } else if ($value == 4) {
+            return 60 * 6;
+        } else if ($value == 5) {
+            return 60 * 24;
+        } else if ($value == 5) {
+            return 60 * 24 * 3;
+        } else {
+            return 60 * 24 * 6;
+        }
+    }
+}
+
 if (!function_exists('log_message')) {
 
     function log_message($message, $data = [], $level = Logger::ALERT)
