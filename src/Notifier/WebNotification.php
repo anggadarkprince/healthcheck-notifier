@@ -9,12 +9,13 @@ class WebNotification extends NotificationResponse
     {
         $data = $this->healthEntity->getData();
         $statusCode = $this->healthEntity->getStatusCode();
-        $notification = get_notification_log(null);
+
         $notificationLogKey = 'web-down';
+        $webDownNotification = get_notification_log($notificationLogKey) ?? [];
+        $currentNotified = ($webDownNotification['total-notified'] ?? 0);
+        $currentNotificationDate = ($webDownNotification['next-notification'] ?? '');
+
         if ($statusCode != 200) {
-            $webDownNotification = get_notification_log($notificationLogKey) ?? [];
-            $currentNotified = ($webDownNotification['total-notified'] ?? 0);
-            $currentNotificationDate = ($webDownNotification['next-notification'] ?? '');
             if (empty($currentNotificationDate) || format_date($currentNotificationDate, 'Y-m-d H:i') == date('Y-m-d H:i')) {
 
                 $messages = "❌ *SERVICE UNAVAILABLE* ❌\n";
@@ -41,6 +42,7 @@ class WebNotification extends NotificationResponse
                 //$addMinutes = (ceil(exp($totalNotified) * 10 / 10) * 10);
                 $nextNotification = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s") . " +" . $addMinutes . " minutes"));
 
+                $notification = get_notification_log(null);
                 $notification[$notificationLogKey] = [
                     'total-notified' => $totalNotified,
                     'next-notification' => $nextNotification
@@ -49,6 +51,7 @@ class WebNotification extends NotificationResponse
             }
         } else {
             // reset notification
+            $notification = get_notification_log(null);
             $notification[$notificationLogKey] = [
                 'total-notified' => 0,
                 'next-notification' => ""

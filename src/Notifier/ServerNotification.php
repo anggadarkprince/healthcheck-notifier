@@ -10,7 +10,6 @@ class ServerNotification extends NotificationResponse
         $data = $this->healthEntity->getData();
         $statusCode = $this->healthEntity->getStatusCode();
 
-        $notification = get_notification_log(null);
         $notificationLogKey = 'server-down';
         $webDownNotification = get_notification_log($notificationLogKey) ?? [];
         $currentNotified = ($webDownNotification['total-notified'] ?? 0);
@@ -42,6 +41,7 @@ class ServerNotification extends NotificationResponse
                 $addMinutes = get_exp_minute($totalNotified);
                 $nextNotification = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s") . " +" . $addMinutes . " minutes"));
 
+                $notification = get_notification_log(null);
                 $notification[$notificationLogKey] = [
                     'total-notified' => $totalNotified,
                     'next-notification' => $nextNotification
@@ -74,6 +74,7 @@ class ServerNotification extends NotificationResponse
                 $addMinutes = get_exp_minute($totalNotified);
                 $nextNotification = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s") . " +" . $addMinutes . " minutes"));
 
+                $notification = get_notification_log(null);
                 $notification[$notificationLogKey] = [
                     'total-notified' => $totalNotified,
                     'next-notification' => $nextNotification
@@ -82,6 +83,7 @@ class ServerNotification extends NotificationResponse
             }
         } else {
             // reset notification
+            $notification = get_notification_log(null);
             $notification[$notificationLogKey] = [
                 'total-notified' => 0,
                 'next-notification' => ""
