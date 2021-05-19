@@ -11,7 +11,7 @@ class ObjectStorageNotification extends NotificationResponse
         $statusCode = $this->healthEntity->getStatusCode();
 
         $notification = get_notification_log(null);
-        $notificationLogKey = 'server-down';
+        $notificationLogKey = 'object-storage-down';
         $webDownNotification = get_notification_log($notificationLogKey) ?? [];
         $currentNotified = ($webDownNotification['total-notified'] ?? 0);
         $currentNotificationDate = ($webDownNotification['next-notification'] ?? '');

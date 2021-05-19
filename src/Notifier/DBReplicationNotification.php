@@ -12,7 +12,7 @@ class DBReplicationNotification extends NotificationResponse
         $statusCode = $this->healthEntity->getStatusCode();
 
         $notification = get_notification_log(null);
-        $notificationLogKey = 'server-down';
+        $notificationLogKey = 'db-replication-down';
         $webDownNotification = get_notification_log($notificationLogKey) ?? [];
         $currentNotified = ($webDownNotification['total-notified'] ?? 0);
         $currentNotificationDate = ($webDownNotification['next-notification'] ?? '');
