@@ -29,7 +29,11 @@ class DBReplicationMonitoring implements MonitoringService
                 json_decode($response->getBody(), true)
             );
         } catch (GuzzleException $e) {
-            return false;
+            $response = $e->getResponse();
+            return new HealthEntity(
+                $response->getStatusCode(),
+                json_decode($response->getBody()->getContents(), true)
+            );
         }
     }
 }
