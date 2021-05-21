@@ -52,7 +52,7 @@ if (!function_exists('get_exp_minute')) {
             return 60 * 6;
         } else if ($value == 5) {
             return 60 * 24;
-        } else if ($value == 5) {
+        } else if ($value == 6) {
             return 60 * 24 * 3;
         } else {
             return 60 * 24 * 6;
