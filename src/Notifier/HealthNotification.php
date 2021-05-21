@@ -2,6 +2,7 @@
 
 namespace HealthCheckNotifier\Notifier;
 
+use HealthCheckNotifier\Service\Monitor\BackupMonitoring;
 use HealthCheckNotifier\Service\Notification\WhatsappChatter;
 
 class HealthNotification extends NotificationResponse
@@ -62,7 +63,6 @@ class HealthNotification extends NotificationResponse
                         $messages .= "\n";
                         break;
                     case 'Server':
-                        $system =
                         $messages .= "*- Server*\n";
                         $messages .= "   Status: {$healthCheck['status']}\n";
                         $messages .= "   Message: {$healthCheck['message']}\n";
@@ -78,6 +78,24 @@ class HealthNotification extends NotificationResponse
                             $messages .= "     - {$dir} ({$size}) \n";
                         }
 
+                        $messages .= "\n";
+                        break;
+                    case 'Backup':
+                        // get from backup server
+                        $backupMonitoring = new BackupMonitoring();
+                        $backupHealthEntity = $backupMonitoring->getHealthStatus();
+
+                        $backupData = $backupHealthEntity->getData();
+                        $backupStatusCode = $backupHealthEntity->getStatusCode();
+
+                        $messages .= "*- Backup*\n";
+                        $messages .= "   Status: {$backupStatusCode}\n";
+                        $messages .= "   Host: " . $backupMonitoring->getBackupHost() . "\n";
+                        $messages .= "   Backup: \n";
+                        foreach ($backupData as $label => $backupDatum) {
+                            $messages .= "   - {$label}: {$backupDatum['location']['path']}\n";
+                            $messages .= "     " . json_encode($backupDatum['data'], JSON_PRETTY_PRINT) . "\n";
+                        }
                         $messages .= "\n";
                         break;
                 }
