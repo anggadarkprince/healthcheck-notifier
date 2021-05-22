@@ -90,11 +90,24 @@ class HealthNotification extends NotificationResponse
 
                         $messages .= "*- Backup*\n";
                         $messages .= "   Status: {$backupStatusCode}\n";
-                        $messages .= "   Host: " . $backupMonitoring->getBackupHost() . "\n";
-                        $messages .= "   Backup: \n";
+                        $messages .= "   Host: " . explode('/', $backupMonitoring->getBackupHost())[0] . "\n";
+                        $messages .= "   Backups: \n";
                         foreach ($backupData['data'] as $label => $backupDatum) {
-                            $messages .= "   - {$label}: {$backupDatum['location']['path']}\n";
-                            $messages .= json_encode($backupDatum['data'], JSON_PRETTY_PRINT) . "\n";
+                            $messages .= "   - *{$label}*: {$backupDatum['location']['path']}\n";
+                            if ($label == 'Database') {
+                                foreach($backupDatum['data'] ?? [] as $backup) {
+                                    foreach ($backup['contents'] ?? [] as $content) {
+                                        $messages .= "      - {$content['name']}\n";
+                                        foreach ($content['contents'] as $item) {
+                                            $messages .= "        - {$item['name']}\n";
+                                        }
+                                    }
+                                }
+                            } else {
+                                foreach($backupDatum['data'] as $backup) {
+                                    $messages .= "      - {$backup['name']}\n";
+                                }
+                            }
                         }
                         $messages .= "\n";
                         break;
