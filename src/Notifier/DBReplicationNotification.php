@@ -24,9 +24,15 @@ class DBReplicationNotification extends NotificationResponse
                 $messages .= "*Health Check*: " . date('Y-m-d H:i:s') . "\n";
                 $messages .= "*Status*: " . ($statusCode ?? 500) . "\n";
                 $messages .= "*Members*: \n";
-                foreach ($data['data']['members'] as $node) {
-                    $messages .= "- {$node['MEMBER_HOST']} ({$node['MEMBER_STATE']})\n";
+                foreach ($data['data']['members'] as $index => $node) {
+                    if ($node['MEMBER_HOST'] == $_ENV['NODE_PRIMARY_IP_ADDRESS']) {
+                        $node['MEMBER_HOST'] = 'PRIMARY';
+                    } else {
+                        $node['MEMBER_HOST'] = 'SLAVE';
+                    }
+                    $messages .= "- Node {$index}: {$node['MEMBER_HOST']} ({$node['MEMBER_STATE']})\n";
                 }
+                $messages .= "- Node x: OTHER SLAVES (OFFLINE)\n";
                 $waChatter = new WhatsappChatter();
                 $waChatter->send([
                     'url' => 'sendMessage',

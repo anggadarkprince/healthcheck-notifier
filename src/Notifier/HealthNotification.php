@@ -42,8 +42,13 @@ class HealthNotification extends NotificationResponse
                         $messages .= "   Status: {$service['health_check']['status']}\n";
                         $messages .= "   Message: {$service['health_check']['message']}\n";
                         $messages .= "   Members: \n";
-                        foreach ($service['health_check']['data']['members'] as $member) {
-                            $messages .= "   - {$member['MEMBER_HOST']} ({$member['MEMBER_STATE']}) " . ($member['MEMBER_STATE'] != 'ONLINE' ? "‼" : '') . "\n";
+                        foreach ($service['health_check']['data']['members'] as $index => $member) {
+                            if ($member['MEMBER_HOST'] == $_ENV['NODE_PRIMARY_IP_ADDRESS']) {
+                                $member['MEMBER_HOST'] = 'PRIMARY';
+                            } else {
+                                $member['MEMBER_HOST'] = 'SLAVE';
+                            }
+                            $messages .= "   - Node {$index}: {$member['MEMBER_HOST']} ({$member['MEMBER_STATE']}) " . ($member['MEMBER_STATE'] != 'ONLINE' ? "‼" : '') . "\n";
                         }
                         $messages .= "\n";
                         break;
@@ -90,7 +95,7 @@ class HealthNotification extends NotificationResponse
 
                         $messages .= "*- Backup*\n";
                         $messages .= "   Status: {$backupStatusCode}\n";
-                        $messages .= "   Host: " . explode('/', $backupMonitoring->getBackupHost())[0] . "\n";
+                        //$messages .= "   Host: " . explode('/', $backupMonitoring->getBackupHost())[0] . "\n";
                         $messages .= "   Backups: \n";
                         foreach ($backupData['data'] as $label => $backupDatum) {
                             $messages .= "   - *{$label}*: {$backupDatum['location']['path']}\n";
