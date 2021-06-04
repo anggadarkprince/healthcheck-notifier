@@ -3,6 +3,7 @@
 namespace HealthCheckNotifier\Notifier;
 
 use HealthCheckNotifier\Service\Notification\WhatsappChatter;
+use Monolog\Logger;
 
 class DBReplicationNotification extends NotificationResponse
 {
@@ -32,7 +33,7 @@ class DBReplicationNotification extends NotificationResponse
                     }
                     $messages .= "- Node {$index}: {$node['MEMBER_HOST']} ({$node['MEMBER_STATE']})\n";
                 }
-                $messages .= "- Node x: OTHER SLAVES (OFFLINE)\n";
+                $messages .= "- OTHER SLAVES (OFFLINE)\n";
                 $waChatter = new WhatsappChatter();
                 $waChatter->send([
                     'url' => 'sendMessage',
@@ -56,6 +57,33 @@ class DBReplicationNotification extends NotificationResponse
                 set_notification_log($notification);
             }
         } else {
+            if (!empty($webDownNotification['total-notified'])) {
+                $messages = "✅ *DB REPLICATION RESTORED*\n";
+                $messages .= "————————————————————\n";
+                $messages .= "*Service Name*: Database Replication\n";
+                $messages .= "*Health Check*: " . date('Y-m-d H:i:s') . "\n";
+                $messages .= "*Status*: " . ($statusCode ?? 500) . "\n";
+                $messages .= "*Members*: \n";
+                foreach ($data['data']['members'] as $index => $node) {
+                    if ($node['MEMBER_HOST'] == $_ENV['NODE_PRIMARY_IP_ADDRESS']) {
+                        $node['MEMBER_HOST'] = 'PRIMARY';
+                    } else {
+                        $node['MEMBER_HOST'] = 'SLAVE';
+                    }
+                    $messages .= "- Node {$index}: {$node['MEMBER_HOST']} ({$node['MEMBER_STATE']})\n";
+                }
+
+                $waChatter = new WhatsappChatter();
+                $waChatter->send([
+                    'url' => 'sendMessage',
+                    'payload' => [
+                        'chatId' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
+                        'body' => $messages
+                    ]
+                ]);
+                log_message('Service [Web] Restored', $data, Logger::INFO);
+            }
+
             // reset notification
             $notification = get_notification_log(null);
             $notification[$notificationLogKey] = [

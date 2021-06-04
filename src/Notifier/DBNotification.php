@@ -2,6 +2,7 @@
 namespace HealthCheckNotifier\Notifier;
 
 use HealthCheckNotifier\Service\Notification\WhatsappChatter;
+use Monolog\Logger;
 
 class DBNotification extends NotificationResponse
 {
@@ -47,6 +48,25 @@ class DBNotification extends NotificationResponse
                 set_notification_log($notification);
             }
         } else {
+            if (!empty($webDownNotification['total-notified'])) {
+                $messages = "✅ *DB RESTORED*\n";
+                $messages .= "————————————————————\n";
+                $messages .= "*Service Name*: Database\n";
+                $messages .= "*Health Check*: " . date('Y-m-d H:i:s') . "\n";
+                $messages .= "*Host*: " . ($data['data']['host'] ?? 'Unavailable') . "\n";
+                $messages .= "*Status*: " . ($statusCode ?? 500) . "\n";
+
+                $waChatter = new WhatsappChatter();
+                $waChatter->send([
+                    'url' => 'sendMessage',
+                    'payload' => [
+                        'chatId' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
+                        'body' => $messages
+                    ]
+                ]);
+                log_message('Service [Database] Restored', $data, Logger::INFO);
+            }
+
             // reset notification
             $notification = get_notification_log(null);
             $notification[$notificationLogKey] = [

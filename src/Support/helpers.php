@@ -67,7 +67,17 @@ if (!function_exists('log_message')) {
         $log = new Logger('app-logger');
         $log->pushHandler(new StreamHandler(__DIR__ . '/../../logs/logs.log', $level));
 
-        $log->alert($message, $data);
+        if ($level == Logger::INFO) {
+            $log->info($message, $data);
+        } else if ($level == Logger::ERROR) {
+            $log->error($message, $data);
+        } else if ($level == Logger::DEBUG) {
+            $log->debug($message, $data);
+        } else if ($level == Logger::WARNING) {
+            $log->warning($message, $data);
+        } else {
+            $log->alert($message, $data);
+        }
     }
 }
 

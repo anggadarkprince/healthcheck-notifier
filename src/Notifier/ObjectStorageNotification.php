@@ -2,6 +2,7 @@
 namespace HealthCheckNotifier\Notifier;
 
 use HealthCheckNotifier\Service\Notification\WhatsappChatter;
+use Monolog\Logger;
 
 class ObjectStorageNotification extends NotificationResponse
 {
@@ -55,7 +56,7 @@ class ObjectStorageNotification extends NotificationResponse
                 $messages .= "*Health Check*: " . date('Y-m-d H:i:s') . "\n";
                 $messages .= "*Endpoint*: " . ($data['data']['endpoint'] ?? 'Unavailable') . "\n";
                 $messages .= "*Region*: " . ($data['data']['region'] ?? 'Unavailable') . "\n";
-                $messages .= "*Status*: " . ($statusCode ?? 500) . "\n";
+                $messages .= "*Status*: 500\n";
                 $messages .= "*Capacity*: " . ($data['data']['reserved_space'] ?? 0) . ' ' . ($data['data']['reserved_space_unit'] ?? '') . "\n";
                 $messages .= "*Total Usage*: " . number_format($data['data']['total_usage'] ?? 0, 1, ',', '.') . ' ' . ($data['data']['total_usage_unit'] ?? '') . "\n";
                 $messages .= "*Total Left*: " . number_format($data['data']['total_left'] ?? 0, 1, ',', '.') . ' ' . ($data['data']['total_left_unit'] ?? '') . "\n";
@@ -84,6 +85,28 @@ class ObjectStorageNotification extends NotificationResponse
                 set_notification_log($notification);
             }
         } else {
+            if (!empty($webDownNotification['total-notified'])) {
+                $messages = "✅ *OBJECT STORAGE RESTORED*\n";
+                $messages .= "————————————————————\n";
+                $messages .= "*Service Name*: Object Storage\n";
+                $messages .= "*Health Check*: " . date('Y-m-d H:i:s') . "\n";
+                $messages .= "*Status*: " . ($statusCode ?? 500) . "\n";
+                $messages .= "*Capacity*: " . ($data['data']['reserved_space'] ?? 0) . ' ' . ($data['data']['reserved_space_unit'] ?? '') . "\n";
+                $messages .= "*Total Usage*: " . number_format($data['data']['total_usage'] ?? 0, 1, ',', '.') . ' ' . ($data['data']['total_usage_unit'] ?? '') . "\n";
+                $messages .= "*Total Left*: " . number_format($data['data']['total_left'] ?? 0, 1, ',', '.') . ' ' . ($data['data']['total_left_unit'] ?? '') . "\n";
+                $messages .= "*Usage Percent*: " . number_format($data['data']['usage_percent'] ?? 0, 1, ',', '.') . "%\n";
+
+                $waChatter = new WhatsappChatter();
+                $waChatter->send([
+                    'url' => 'sendMessage',
+                    'payload' => [
+                        'chatId' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
+                        'body' => $messages
+                    ]
+                ]);
+                log_message('Service [Object Storage] Restored', $data, Logger::INFO);
+            }
+
             // reset notification
             $notification = get_notification_log(null);
             $notification[$notificationLogKey] = [
