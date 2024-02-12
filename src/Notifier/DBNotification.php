@@ -29,8 +29,8 @@ class DBNotification extends NotificationResponse
                 $waChatter->send([
                     'url' => 'sendMessage',
                     'payload' => [
-                        'chatId' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
-                        'body' => $messages
+                        'to_number' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
+                        'message' => $messages
                     ]
                 ]);
                 log_message('Service [Database] Unavailable', $data);
@@ -60,8 +60,8 @@ class DBNotification extends NotificationResponse
                 $waChatter->send([
                     'url' => 'sendMessage',
                     'payload' => [
-                        'chatId' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
-                        'body' => $messages
+                        'to_number' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
+                        'message' => $messages
                     ]
                 ]);
                 log_message('Service [Database] Restored', $data, Logger::INFO);

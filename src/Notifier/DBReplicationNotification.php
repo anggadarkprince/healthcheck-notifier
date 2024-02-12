@@ -38,8 +38,8 @@ class DBReplicationNotification extends NotificationResponse
                 $waChatter->send([
                     'url' => 'sendMessage',
                     'payload' => [
-                        'chatId' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
-                        'body' => $messages
+                        'to_number' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
+                        'message' => $messages
                     ]
                 ]);
                 log_message('Service [Database Replication] Unavailable', $data);
@@ -77,8 +77,8 @@ class DBReplicationNotification extends NotificationResponse
                 $waChatter->send([
                     'url' => 'sendMessage',
                     'payload' => [
-                        'chatId' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
-                        'body' => $messages
+                        'to_number' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
+                        'message' => $messages
                     ]
                 ]);
                 log_message('Service [Web] Restored', $data, Logger::INFO);

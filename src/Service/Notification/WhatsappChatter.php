@@ -2,6 +2,7 @@
 
 namespace HealthCheckNotifier\Service\Notification;
 
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
@@ -22,18 +23,17 @@ class WhatsappChatter implements NotificationService
         $chatMethod = $payload['method'] ?? 'post';
         $chatUrl = $payload['url'] ?? '/';
         $chatPayload = $payload['payload'];
+        $chatPayload['type'] = $payload['payload']['type'] ?? 'text';
 
-        if (!key_exists('token', $payload)) {
-            $chatPayload['token'] = $chatApiToken;
-        }
         if (!empty($chatApiSandbox)) {
-            $chatPayload['chatId'] = detect_chat_id($chatApiSandbox);
+            $chatPayload['to_number'] = detect_chat_id($chatApiSandbox);
         }
 
         try {
             $client = new Client([
                 'base_uri' => $baseUri,
-                'verify' => boolval($chatApiSecure)
+                'verify' => boolval($chatApiSecure),
+                'headers' => ['x-maytapi-key' => $chatApiToken]
             ]);
             $response = $client->request($chatMethod, $chatUrl, [
                 'query' => ['token' => $chatApiToken],

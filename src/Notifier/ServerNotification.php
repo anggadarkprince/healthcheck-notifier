@@ -31,8 +31,8 @@ class ServerNotification extends NotificationResponse
                 $waChatter->send([
                     'url' => 'sendMessage',
                     'payload' => [
-                        'chatId' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
-                        'body' => $messages
+                        'to_number' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
+                        'message' => $messages
                     ]
                 ]);
                 log_message('Service [Server] Unavailable', $data);
@@ -64,8 +64,8 @@ class ServerNotification extends NotificationResponse
                 $waChatter->send([
                     'url' => 'sendMessage',
                     'payload' => [
-                        'chatId' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
-                        'body' => $messages
+                        'to_number' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
+                        'message' => $messages
                     ]
                 ]);
                 log_message('Service [Server] Insufficient Storage', $data);
@@ -100,8 +100,8 @@ class ServerNotification extends NotificationResponse
                 $waChatter->send([
                     'url' => 'sendMessage',
                     'payload' => [
-                        'chatId' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
-                        'body' => $messages
+                        'to_number' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
+                        'message' => $messages
                     ]
                 ]);
                 log_message('Service [Server] Restored', $data, Logger::INFO);

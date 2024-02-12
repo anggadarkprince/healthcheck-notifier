@@ -11,8 +11,8 @@ $waChatter = new WhatsappChatter();
 $result = $waChatter->send([
     'url' => 'sendMessage',
     'payload' => [
-        'chatId' => detect_chat_id('6285655479868'),
-        'body' => "Test chat whatsapp 👷🏼"
+        'to_number' => detect_chat_id('6285655479868'),
+        'message' => "Test chat whatsapp 👷🏼"
     ]
 ]);
 

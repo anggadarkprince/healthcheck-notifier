@@ -123,8 +123,8 @@ class HealthNotification extends NotificationResponse
             return $waChatter->send([
                 'url' => 'sendMessage',
                 'payload' => [
-                    'chatId' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
-                    'body' => $messages
+                    'to_number' => detect_chat_id($_ENV['HEALTH_CHAT_REPORT']),
+                    'message' => $messages
                 ]
             ]);
         }
