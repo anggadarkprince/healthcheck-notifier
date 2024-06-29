@@ -116,6 +116,20 @@ class HealthNotification extends NotificationResponse
                         }
                         $messages .= "\n";
                         break;
+                    case 'Remote Backup':
+                        $messages .= "*- Remote Backup*\n";
+                        $messages .= "   Status: {$service['health_check']['status']}\n";
+                        $messages .= "   Message: {$service['health_check']['message']}\n";
+                        foreach ($service['health_check']['data'] as $label => $backupData) {
+                            $messages .= "   - *{$label}*:\n";
+                            foreach ($backupData as $backupDatum) {
+                                $messages .= "      - *{$backupDatum['group']}*:\n";
+                                foreach ($backupDatum['paths'] as $path) {
+                                    $messages .= "         - " . str_replace($backupDatum['group'], '', $path['path']) . " ({$path['size_formatted']})\n";
+                                }
+                            }
+                        }
+                        break;
                 }
             }
 
